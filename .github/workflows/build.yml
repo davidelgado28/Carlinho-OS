@@ -1,0 +1,35 @@
+name: Build Carlinho OS ISO
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Dependencias de Compilacao Bare-Metal
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-multilib \
+            nasm \
+            xorriso \
+            grub-pc-bin \
+            mtools
+
+      - name: Compilar Kernel e Gerar Imagem ISO
+        run: make
+
+      - name: Disponibilizar ISO para Download (Artifacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: carlinho-os-iso
+          path: carlinho-os.iso
+          retention-days: 7
